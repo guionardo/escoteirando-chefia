@@ -22,9 +22,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install
-        run: npm ci
+        run: yarn
+      - name: Lint
+        run: yarn run lint
       - name: Build
-        run: npm run build
+        run: quasar build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.1
         env:
