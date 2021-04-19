@@ -22,17 +22,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-      
       - name: Install
-        run: yarn
-      - name: Install Quasar
-        run: yarn global add @quasar/cli
+        run: |
+          yarn
+          yarn global add @quasar/cli
       - name: Lint
-        run: yarn run lint      
+        run: yarn run lint
       - name: Build
         run: yarn quasar build
-      - name: Deploy
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_BRANCH: main
           branch: gh-pages
           folder: dist/spa
