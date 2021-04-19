@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -34,3 +36,4 @@ jobs:
         env:
           branch: gh-pages
           folder: dist/spa
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
