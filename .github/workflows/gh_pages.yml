@@ -28,7 +28,7 @@ jobs:
       - name: Install Quasar
         run: yarn global add @quasar/cli
       - name: Build
-        run: quasar build
+        run: yarn quasar build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.1
         env:
