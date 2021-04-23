@@ -35,7 +35,6 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.1
-        env:
-          branch: docs
-          folder: dist/spa
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: gh-docs
+          folder: dist/spa         
