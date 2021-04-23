@@ -1,5 +1,7 @@
 # Escoteirando Chefia (escoteirando-chefia)
 
+[![CodeQL](https://github.com/guionardo/escoteirando-chefia/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/guionardo/escoteirando-chefia/actions/workflows/codeql-analysis.yml)
+
 Projeto para dar uma interface WEB às informações do aplicativo mAPPa da UEB
 
 ## Install the dependencies
