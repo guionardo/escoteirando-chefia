@@ -25,6 +25,28 @@ export class MappaLoginService extends MappaRequestService {
     MappaLogin.clearAuth();
   }
 
+  /**
+   * Automatic login from localStorage
+   */
+  autoLogin() {
+    if (!MappaLogin.isLogged) {
+      return;
+    }
+    this.getEscotista(MappaLogin.auth.userId)
+      .then(response => {
+        this.log_info('AutoLogin Escotista', response);
+        this.getGrupo(
+          MappaLogin.escotista.codigoGrupo,
+          MappaLogin.escotista.codigoRegiao
+        )
+          .then(grupoResponse => {
+            this.log_info('AutoLogin Grupo', grupoResponse);
+          })
+          .catch(error => {});
+      })
+      .catch(error => {});
+  }
+
   getEscotista(userId: number): Promise<IEscotista> {
     return new Promise((resolve, reject) => {
       const escotista = getEscotista(userId);
@@ -59,7 +81,7 @@ export class MappaLoginService extends MappaRequestService {
           }
         };
         this.get('/api/grupos', {}, filter)
-          .then(response => {              
+          .then(response => {
             const grupoResponse = (response.data as Array<IGrupo>)[0];
             MappaLogin.setGrupo(grupoResponse);
             resolve(grupoResponse);

@@ -16,7 +16,7 @@ import {
   ISecao
 } from 'src/domain/models/interfaces';
 import { ILoginResponse } from 'src/domain/responses';
-import { setEscotista, getAuth } from 'src/services/storage_service';
+import { setEscotista, setGrupo, getAuth } from 'src/services/storage_service';
 
 const MAPPA_LOGIN = 'MAPPA_LOGIN';
 const NAO_LOGADO = 'Usuário não logado';
@@ -109,6 +109,16 @@ class MappaLoginModule extends VuexModule {
   }
   get isLogged(): boolean {
     return !!this.auth.auth && this.auth.validUntil > new Date();
+  }
+
+  @Action
+  setGrupo(grupo:IGrupo){
+    this.SET_GRUPO(grupo)
+  }
+  @Mutation
+  SET_GRUPO(grupo:IGrupo){
+    setGrupo(grupo)
+    this.grupo=grupo
   }
 
   get userName(): string {

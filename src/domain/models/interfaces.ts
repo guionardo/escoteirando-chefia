@@ -30,3 +30,4 @@ export interface ISecao {
   codigoGrupo: number;
   codigoRegiao: string;
 }
+
