@@ -22,30 +22,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
-export default defineComponent({
-  name: 'EssentialLink',
-  props: {
-    title: {
-      type: String,
-      required: true
-    },
-
-    caption: {
-      type: String,
-      default: ''
-    },
-
-    link: {
-      type: String,
-      default: '#'
-    },
-
-    icon: {
-      type: String,
-      default: ''
-    }
-  }
-});
+@Component
+export default class EssentialLink extends Vue {
+  @Prop({ type: String, required: true }) readonly title!: string;
+  @Prop({ type: String, default: '' }) readonly caption!: string;
+  @Prop({ type: String, default: '#' }) readonly link!: string;
+  @Prop({ type: String, default: ''}) readonly icon!: string;
+}
 </script>
