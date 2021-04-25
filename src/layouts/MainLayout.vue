@@ -8,28 +8,22 @@
           round
           icon="menu"
           aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
+          @click="isLeftDrawerOpen = !isLeftDrawerOpen"
         />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-toolbar-title> Escoteirando Chefia </q-toolbar-title>
+        <user-data-menu />
       </q-toolbar>
     </q-header>
 
     <q-drawer
-      v-model="leftDrawerOpen"
+      v-model="isLeftDrawerOpen"
       show-if-above
       bordered
       content-class="bg-grey-1"
     >
       <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
+        <q-item-label header class="text-grey-8">
           Essential Links
         </q-item-label>
         <EssentialLink
@@ -47,63 +41,87 @@
 </template>
 
 <script lang="ts">
-import EssentialLink from 'components/EssentialLink.vue'
+import EssentialLink from 'components/EssentialLink.vue';
 
 const linksData = [
   {
     title: 'Docs',
     caption: 'quasar.dev',
     icon: 'school',
-    link: 'https://quasar.dev'
+    link: 'https://quasar.dev',
   },
   {
     title: 'Github',
     caption: 'github.com/quasarframework',
     icon: 'code',
-    link: 'https://github.com/quasarframework'
+    link: 'https://github.com/quasarframework',
   },
   {
     title: 'Discord Chat Channel',
     caption: 'chat.quasar.dev',
     icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    link: 'https://chat.quasar.dev',
   },
   {
     title: 'Forum',
     caption: 'forum.quasar.dev',
     icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    link: 'https://forum.quasar.dev',
   },
   {
     title: 'Twitter',
     caption: '@quasarframework',
     icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
+    link: 'https://twitter.quasar.dev',
   },
   {
     title: 'Facebook',
     caption: '@QuasarFramework',
     icon: 'public',
-    link: 'https://facebook.quasar.dev'
+    link: 'https://facebook.quasar.dev',
   },
   {
     title: 'Quasar Awesome',
     caption: 'Community Quasar projects',
     icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
+    link: 'https://awesome.quasar.dev',
+  },
 ];
 
-import { defineComponent, ref } from '@vue/composition-api';
+import { Vue, Component } from 'vue-property-decorator';
+import { LayoutStore } from 'src/store/LayoutStoreModule';
+import { MappaLogin } from 'src/store/MappaLoginModule';
+import { IEscotista } from 'src/domain/models/interfaces';
+import UserDataMenu from 'src/components/UserDataMenu';
+@Component({
+  components: { EssentialLink, UserDataMenu },
+})
+export default class MainLayout extends Vue {
+  essentialLinks = linksData;
+  login = {};
 
-export default defineComponent({
-  name: 'MainLayout',
-  components: { EssentialLink },
-  setup() {
-    const leftDrawerOpen = ref(false);
-    const essentialLinks = ref(linksData);
-
-    return {leftDrawerOpen, essentialLinks}
+  get isLeftDrawerOpen() {
+    return LayoutStore.isLeftDrawerOpen;
   }
-});
+
+  set isLeftDrawerOpen(value: boolean) {
+    LayoutStore.setLeftDrawer(value);
+  }
+
+  get auth() {
+    return MappaLogin.auth;
+  }
+
+  get isLogged() {
+    return MappaLogin.isLogged;
+  }
+
+  get userName() {
+    return MappaLogin.userName;
+  }
+
+  get user(): IEscotista {
+    return MappaLogin.escotista;
+  }
+}
 </script>
