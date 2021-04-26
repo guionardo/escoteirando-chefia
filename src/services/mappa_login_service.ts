@@ -11,6 +11,7 @@ export class MappaLoginService extends MappaRequestService {
       const request = new LoginRequest(username, password);
       this.post('/api/escotistas/login', request)
         .then(response => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const loginResponse = response.data as ILoginResponse;
           MappaLogin.setAuth(loginResponse);
           resolve(loginResponse);

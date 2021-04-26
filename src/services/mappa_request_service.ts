@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { IEscotista, IGrupo } from 'src/domain/models/interfaces';
 import { MappaLogin } from 'src/store/MappaLoginModule';
+import { Logger } from './logger';
 
 export interface IAjaxRequest {
   method: string;
@@ -15,7 +17,7 @@ export interface IAjaxResponse {
   request: IAjaxRequest;
 }
 
-export class MappaRequestService {
+export class MappaRequestService extends Logger {
   /**
    * GET request
    * @param url
@@ -36,7 +38,7 @@ export class MappaRequestService {
           },
           success: false
         };
-        this.log_error('GET', response);
+        this.logError('GET', response);
         reject(response);
         return;
       }
@@ -65,7 +67,7 @@ export class MappaRequestService {
               url: url
             }
           };
-          this.log_debug('GET', newResponse);
+          this.logDebug('GET', newResponse);
           resolve(newResponse);
         })
         .catch(error => {
@@ -80,7 +82,7 @@ export class MappaRequestService {
               url: url
             }
           };
-          this.log_error('GET', errResponse);
+          this.logError('GET', errResponse);
           reject(errResponse);
         });
     });
@@ -107,7 +109,7 @@ export class MappaRequestService {
               url: url
             }
           };
-          this.log_debug('POST', newResponse);
+          this.logDebug('POST', newResponse);
           resolve(newResponse);
         })
         .catch(error => {
@@ -122,33 +124,9 @@ export class MappaRequestService {
               url: url
             }
           };
-          this.log_error('POST', errResponse);
+          this.logError('POST', errResponse);
           reject(errResponse);
         });
     });
-  }
-
-  log_head(message: string): string {
-    return `[${this.constructor.name}] ${message}`;
-  }
-
-  _log(method: CallableFunction, message: string, data = null): void {
-    if (!!data) {
-      method(this.log_head(message), data);
-    } else {
-      method(this.log_head(message));
-    }
-  }
-  log_info(message: string, data: never | null = null) {
-    this._log(console.info, message, data);
-  }
-  log_warn(message: string, data: undefined | null = null) {
-    this._log(console.warn, message, data);
-  }
-  log_error(message: string, data: never | null = null) {
-    this._log(console.error, message, data);
-  }
-  log_debug(message: string, data = null) {
-    this._log(console.debug, message, data);
   }
 }

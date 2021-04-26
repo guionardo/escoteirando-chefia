@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 <template>
   <q-card class="login-card" bordered>
     <q-card-section>
@@ -53,7 +54,7 @@ export default class LoginComponent extends Vue {
   show_usage = false;
 
   doLogin(): void {
-    if (!this.ack) {
+    if (!this.ack) {      
       this.$q.notify({
         message: 'Você deve aceitar os termos de uso deste site',
         icon: 'warning_amber',
@@ -103,7 +104,7 @@ export default class LoginComponent extends Vue {
                 console.error('GET_GRUPO', error);
                 this.$q.notify({
                   type: 'negative',
-                  message: `Ocorreu um erro ao obter o grupo: ${error}`,
+                  message: 'Ocorreu um erro ao obter o grupo',
                 });
               });
           })
