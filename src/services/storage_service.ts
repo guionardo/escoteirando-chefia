@@ -36,7 +36,7 @@ export function getGrupo(
   codigoGrupo: number,
   codigoRegiao: string
 ): IGrupo | null {
-  const grupo = LocalStorage.getIndex(GRUPO) as IGrupo;
+  const grupo = LocalStorage.getItem(GRUPO) as IGrupo;
   if (
     grupo &&
     grupo.codigo == codigoGrupo &&

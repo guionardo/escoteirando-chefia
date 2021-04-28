@@ -1,5 +1,5 @@
 <template>
-   <q-page class="row items-center justify-evenly">  
+   <q-page class="row items-center justify-evenly">
         <q-card>
             <q-card-section>
                 <div class="text-h6">Termos de Uso</div>
@@ -10,7 +10,7 @@
             <q-card-actions>
                 <q-btn flat label="Voltar" color="primary" @click="voltar"/>
             </q-card-actions>
-        </q-card>    
+        </q-card>
   </q-page>
 </template>
 
@@ -27,9 +27,3 @@ export default class UsageTerms extends Vue{
   }
 }
 </script>
-
-<style lang="sass" scoped>
-.login-card
-    width: 100%
-    max-width:250px
-</style>

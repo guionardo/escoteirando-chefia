@@ -35,17 +35,21 @@ export class MappaLoginService extends MappaRequestService {
     }
     this.getEscotista(MappaLogin.auth.userId)
       .then(response => {
-        this.log_info('AutoLogin Escotista', response);
+        this.logInfo('AutoLogin Escotista', response);
         this.getGrupo(
           MappaLogin.escotista.codigoGrupo,
           MappaLogin.escotista.codigoRegiao
         )
           .then(grupoResponse => {
-            this.log_info('AutoLogin Grupo', grupoResponse);
+            this.logInfo('AutoLogin Grupo', grupoResponse);
           })
-          .catch(error => {});
+          .catch(error => {
+            this.logError('AutoLogin Grupo',error)
+          });
       })
-      .catch(error => {});
+      .catch(error => {
+        this.logError('AutoLogin Escotista',error)
+      });
   }
 
   getEscotista(userId: number): Promise<IEscotista> {

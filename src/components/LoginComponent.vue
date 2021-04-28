@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 <template>
   <q-card class="login-card" bordered>
     <q-card-section>
@@ -54,7 +53,7 @@ export default class LoginComponent extends Vue {
   show_usage = false;
 
   doLogin(): void {
-    if (!this.ack) {      
+    if (!this.ack) {
       this.$q.notify({
         message: 'Você deve aceitar os termos de uso deste site',
         icon: 'warning_amber',
@@ -64,7 +63,8 @@ export default class LoginComponent extends Vue {
             label: 'Mostre-me',
             color: 'white',
             handler: (): void => {
-              return this.$router.push('usage_terms');
+              void this.$router.push('usage_terms');
+              return
             },
           },
         ],
@@ -109,9 +109,10 @@ export default class LoginComponent extends Vue {
               });
           })
           .catch((error) => {
+            console.error('GET_ESCOTISTA',error)
             this.$q.notify({
               type: 'negative',
-              message: `Ocorreu um erro ao obter o escotista: ${error}`,
+              message: `Ocorreu um erro ao obter o escotista: ${JSON.stringify(error)}`,
             });
           });
       })
@@ -131,3 +132,8 @@ export default class LoginComponent extends Vue {
   }
 }
 </script>
+<style lang="sass" scoped>
+.login-card
+  width: 100%
+  max-width: 250px
+</style>

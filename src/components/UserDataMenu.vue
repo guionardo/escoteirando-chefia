@@ -13,30 +13,30 @@
                     <q-item-section>Seção</q-item-section>
                     <q-item-section>{{secaoNome}}</q-item-section>
                 </q-item>
-            </q-list>            
+            </q-list>
           </div>
 
           <q-separator vertical inset class="q-mx-lg" />
 
           <div class="column items-center">
             <q-avatar size="72px">
-              <img src="https://cdn.quasar.dev/img/avatar4.jpg">
+              <img alt="user_picture" src="https://cdn.quasar.dev/img/avatar4.jpg">
             </q-avatar>
             <q-separator />
-            <q-btn 
-                class="q-mt-md full-width" 
-                icon="gavel"     
-                align="between"           
-                color="secondary" 
-                label="Termos de Uso" 
-                size="sm" 
+            <q-btn
+                class="q-mt-md full-width"
+                icon="gavel"
+                align="between"
+                color="secondary"
+                label="Termos de Uso"
+                size="sm"
                 to="usage_terms" />
-            <q-btn                
-                class="q-mt-md full-width" 
+            <q-btn
+                class="q-mt-md full-width"
                 icon="logout"
-                align="between"           
+                align="between"
                 color="primary"
-                label="Sair"                
+                label="Sair"
                 size="sm"
                 v-close-popup
                 @click="logout"
@@ -44,7 +44,7 @@
           </div>
         </div>
       </q-menu>
-    </q-btn>  
+    </q-btn>
 </template>
 
 <script lang="ts">
@@ -53,8 +53,8 @@ import { Vue, Component } from 'vue-property-decorator';
 
 @Component
 export default class UserDataMenu extends Vue {
-    
-    logout(): void {        
+
+    logout(): void {
         MappaLogin.clearAuth()
     }
 
@@ -80,6 +80,6 @@ export default class UserDataMenu extends Vue {
     get secaoNome(){
         return MappaLogin.secaoNome
     }
-  
+
 }
 </script>

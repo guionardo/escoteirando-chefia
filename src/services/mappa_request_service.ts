@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { IEscotista, IGrupo } from 'src/domain/models/interfaces';
 import { MappaLogin } from 'src/store/MappaLoginModule';
 import { Logger } from './logger';
@@ -44,9 +44,12 @@ export class MappaRequestService extends Logger {
       }
       // Encoding query data
       const ret = [];
-      for (const d in data) {
-        ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
+      for (const [k, v] of Object.entries(data)) {
+        ret.push(`${encodeURIComponent(k)}=${encodeURIComponent(v as string)}`);
       }
+      // for (const d in data) {
+      //   ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(data[d])}`);
+      // }
       const query = ret.length == 0 ? '' : '?' + ret.join('&');
       let request;
       if (json) {
@@ -71,10 +74,11 @@ export class MappaRequestService extends Logger {
           resolve(newResponse);
         })
         .catch(error => {
+          const response = (error as AxiosError).response;
           const errResponse: IAjaxResponse = {
-            data: error.response.data,
-            message: error.response.statusText,
-            statusCode: error.response.status,
+            data: response?.data,
+            message: response?.statusText ?? '',
+            statusCode: response?.status ?? 0,
             success: false,
             request: {
               data: data,
@@ -113,10 +117,11 @@ export class MappaRequestService extends Logger {
           resolve(newResponse);
         })
         .catch(error => {
+          const response = (error as AxiosError).response;
           const errResponse: IAjaxResponse = {
-            data: error.response.data,
-            message: error.response.statusText,
-            statusCode: error.response.status,
+            data: response?.data,
+            message: response?.statusText ?? '',
+            statusCode: response?.status ?? 0,
             success: false,
             request: {
               data: data,

@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import EssentialLink from 'components/EssentialLink.vue';
+import UserDataMenu from 'components/UserDataMenu.vue';
 
 const linksData = [
   {
@@ -92,7 +93,7 @@ import { Vue, Component } from 'vue-property-decorator';
 import { LayoutStore } from 'src/store/LayoutStoreModule';
 import { MappaLogin } from 'src/store/MappaLoginModule';
 import { IEscotista } from 'src/domain/models/interfaces';
-import UserDataMenu from 'src/components/UserDataMenu';
+
 @Component({
   components: { EssentialLink, UserDataMenu },
 })

@@ -1,5 +1,5 @@
-import {Notify} from 'quasar'
+import { Notify } from 'quasar';
 
-export notify = (message:string,type:string)=>{
-    Notify.create()
-}
+export const notify = (message: string, type: string) => {
+  Notify.create({ message: message });
+};

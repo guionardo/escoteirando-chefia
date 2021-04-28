@@ -1,1 +1,1 @@
-export { LoginResponse, ILoginResponse } from './login_response';
+export { ILoginResponse } from './login_response';
