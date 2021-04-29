@@ -7,7 +7,7 @@ declare module 'vue/types/vue' {
   }
 }
 
-axios.defaults.baseURL = 'https://mappa.escoteiros.org.br';
+axios.defaults.baseURL = 'http://mappa.escoteiros.org.br';
 axios.defaults.headers = {
   'User-Agent': 'okhttp/3.4.1'
 };

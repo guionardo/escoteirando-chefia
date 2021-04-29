@@ -1,14 +1,19 @@
-import { store } from 'quasar/wrappers';
-import Vuex, { Store } from 'vuex';
+import Vuex from 'vuex';
+import mappa from './MappaStoreModule';
+import Vue from 'vue';
+import { getModule } from 'vuex-module-decorators';
+import MappaStoreModule from './MappaStoreModule';
 
-export let storeInstance: Store<unknown>;
+Vue.use(Vuex);
 
-export default store(function({ Vue }) {
-  Vue.use(Vuex);
-  const store = new Store<unknown>({
-    modules: {},
-    strict: !!process.env.DEBUGGING
-  });
-  storeInstance = store;
-  return store;
+const store = new Vuex.Store({
+  state: {},
+  modules: {
+    mappa
+  },
+  strict: !!process.env.DEBUGGING
 });
+
+export default store;
+
+export const mappaStore = getModule(MappaStoreModule, store);

@@ -1,5 +1,8 @@
 import { ILoginResponse } from '../responses';
 import { IAuthorization } from '../models/interfaces';
+import { Logger } from 'src/services/logger';
+
+const logger = new Logger('Authorization');
 
 export default class Authorization implements IAuthorization {
   auth: string;
@@ -28,7 +31,7 @@ export default class Authorization implements IAuthorization {
       userId: 1
     };
     const auth = new Authorization(payload);
-    console.log('FakeAuth', auth);
+    logger.logDebug('FakeAuth', auth);
     return auth;
   }
 }

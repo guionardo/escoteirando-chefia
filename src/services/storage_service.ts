@@ -1,18 +1,30 @@
 import { LocalStorage } from 'quasar';
+import Authorization from 'src/domain/models/authorization';
 import {
   IAuthorization,
   IEscotista,
   IGrupo
 } from 'src/domain/models/interfaces';
+import { Logger } from './logger';
 
 const ESCOTISTA = 'MAPPA_ESCOTISTA';
 const LOGIN = 'MAPPA_LOGIN';
 const GRUPO = 'MAPPA_GRUPO';
+const logger = new Logger('StorageService');
 
+/**
+ * Returns valid authorization from LocalStorage
+ * @returns 
+ */
 export function getAuth(): IAuthorization | null {
-  const auth = LocalStorage.getItem(LOGIN) as IAuthorization;
-  if (auth && auth.validUntil > new Date()) {
-    return auth;
+  let auth = LocalStorage.getItem(LOGIN) as IAuthorization;
+
+  logger.logDebug('getAuth', auth);
+  if (auth) {
+    auth = new Authorization(auth);
+    if (auth && auth.validUntil > new Date()) {
+      return auth;
+    }
   }
   return null;
 }

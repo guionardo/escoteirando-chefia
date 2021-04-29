@@ -1,3 +1,4 @@
+import Vue from 'vue';
 export interface ILogger {
   logInfo(message: string, data?: unknown): void;
   logWarn(message: string, data?: unknown): void;
@@ -7,12 +8,23 @@ export interface ILogger {
 
 export class Logger implements ILogger {
   debugEnabled = true;
-  constructor() {
+  loggerName = '';
+
+  constructor(loggerName: string | Vue = '') {
     this.debugEnabled = process.env.NODE_ENV != 'production';
+    if (typeof loggerName == 'string') {
+      this.loggerName = loggerName || this.constructor.name;
+    } else {
+      if (loggerName instanceof Vue) {
+        this.loggerName = loggerName.constructor.name;
+      } else {
+        this.loggerName = this.constructor.name;
+      }
+    }
   }
 
   private logWrap(method: CallableFunction, message: string, data?: unknown) {
-    message = `[${this.constructor.name}] ${message}`;
+    message = `[${this.loggerName}] ${message}`;
 
     if (data) {
       method(message, data);

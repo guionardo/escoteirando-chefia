@@ -90,9 +90,6 @@ const linksData = [
 ];
 
 import { Vue, Component } from 'vue-property-decorator';
-import { LayoutStore } from 'src/store/LayoutStoreModule';
-import { MappaLogin } from 'src/store/MappaLoginModule';
-import { IEscotista } from 'src/domain/models/interfaces';
 
 @Component({
   components: { EssentialLink, UserDataMenu },
@@ -100,29 +97,6 @@ import { IEscotista } from 'src/domain/models/interfaces';
 export default class MainLayout extends Vue {
   essentialLinks = linksData;
   login = {};
-
-  get isLeftDrawerOpen() {
-    return LayoutStore.isLeftDrawerOpen;
-  }
-
-  set isLeftDrawerOpen(value: boolean) {
-    LayoutStore.setLeftDrawer(value);
-  }
-
-  get auth() {
-    return MappaLogin.auth;
-  }
-
-  get isLogged() {
-    return MappaLogin.isLogged;
-  }
-
-  get userName() {
-    return MappaLogin.userName;
-  }
-
-  get user(): IEscotista {
-    return MappaLogin.escotista;
-  }
+  isLeftDrawerOpen=false
 }
 </script>

@@ -42,15 +42,20 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { MappaLoginServiceInstance } from 'src/services/mappa_login_service';
-import { IAjaxResponse } from 'src/services/mappa_request_service';
-
+import { Logger } from 'src/services/logger'
+import { mappaStore } from 'src/store'
 @Component
 export default class LoginComponent extends Vue {
   username = '';
   password = '';
   ack = false;
   show_usage = false;
+  logger=new Logger(this)
+
+  async mounted() {
+    this.logger.logInfo('MOUNTED')
+    await mappaStore.getAuthFromLocalStorage();    
+  }
 
   doLogin(): void {
     if (!this.ack) {
@@ -78,57 +83,58 @@ export default class LoginComponent extends Vue {
         color: 'negative',
       });
       return;
+    }    
+
+    if (mappaStore.login(this.username,this.password)){      
+      this.$q.notify({ message: `Login autorizado para ${mappaStore.userName} do GE ${mappaStore.grupoNome}` ,type:'positive'});
+    }else{
+      this.$q.notify({message:'Não foi possível fazer o login',type:'negative'})
+      //TODO: Obter o retorno da falha do login
     }
+      // .then((response): void => {     
 
-    console.log('MappaLoginServiceInstance', MappaLoginServiceInstance);
+      //   MappaLoginServiceInstance.getEscotista(response.userId)
+      //     .then((escotista) => {
+      //       this.$q.notify({ message: `Escotista:${escotista.nomeCompleto}` });
 
-    MappaLoginServiceInstance.login(this.username, this.password)
-      .then((response): void => {
-        console.log('Login', response);
-        this.$q.notify({ message: 'Login autorizado' });
-
-        MappaLoginServiceInstance.getEscotista(response.userId)
-          .then((escotista) => {
-            this.$q.notify({ message: `Escotista:${escotista.nomeCompleto}` });
-
-            MappaLoginServiceInstance.getGrupo(
-              escotista.codigoGrupo,
-              escotista.codigoRegiao
-            )
-              .then((grupo) => {
-                this.$q.notify({
-                  message: `Grupo Escoteiro: ${grupo.codigo}/${grupo.codigoRegiao} ${grupo.nome}`,
-                });
-              })
-              .catch((error) => {
-                console.error('GET_GRUPO', error);
-                this.$q.notify({
-                  type: 'negative',
-                  message: 'Ocorreu um erro ao obter o grupo',
-                });
-              });
-          })
-          .catch((error) => {
-            console.error('GET_ESCOTISTA',error)
-            this.$q.notify({
-              type: 'negative',
-              message: `Ocorreu um erro ao obter o escotista: ${JSON.stringify(error)}`,
-            });
-          });
-      })
-      .catch((error: IAjaxResponse): void => {
-        if (error.statusCode == 401) {
-          this.$q.notify({
-            type: 'negative',
-            message: 'Não autorizado. Verifique seu usuário e/ou senha',
-          });
-        } else {
-          this.$q.notify({
-            type: 'negative',
-            message: `Ocorreu um erro ao acessar o servidor de autenticação. [${error.statusCode}:${error.message}]`,
-          });
-        }
-      });
+      //       MappaLoginServiceInstance.getGrupo(
+      //         escotista.codigoGrupo,
+      //         escotista.codigoRegiao
+      //       )
+      //         .then((grupo) => {
+      //           this.$q.notify({
+      //             message: `Grupo Escoteiro: ${grupo.codigo}/${grupo.codigoRegiao} ${grupo.nome}`,
+      //           });
+      //         })
+      //         .catch((error) => {
+      //           this.logger.logError('GET_GRUPO', error);
+      //           this.$q.notify({
+      //             type: 'negative',
+      //             message: 'Ocorreu um erro ao obter o grupo',
+      //           });
+      //         });
+      //     })
+      //     .catch((error) => {
+      //       this.logger.logError('GET_ESCOTISTA',error)
+      //       this.$q.notify({
+      //         type: 'negative',
+      //         message: `Ocorreu um erro ao obter o escotista: ${JSON.stringify(error)}`,
+      //       });
+      //     });
+      // })
+      // .catch((error: IAjaxResponse): void => {
+      //   if (error.statusCode == 401) {
+      //     this.$q.notify({
+      //       type: 'negative',
+      //       message: 'Não autorizado. Verifique seu usuário e/ou senha',
+      //     });
+      //   } else {
+      //     this.$q.notify({
+      //       type: 'negative',
+      //       message: `Ocorreu um erro ao acessar o servidor de autenticação. [${error.statusCode}:${error.message}]`,
+      //     });
+      //   }
+      // });
   }
 }
 </script>

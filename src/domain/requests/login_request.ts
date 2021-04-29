@@ -7,4 +7,12 @@ export class LoginRequest {
     this.username = username;
     this.password = password;
   }
+
+  toJson() {
+    return {
+      type: this.type,
+      username: this.username,
+      password: this.password
+    };
+  }
 }

@@ -48,37 +48,43 @@
 </template>
 
 <script lang="ts">
-import { MappaLogin } from 'src/store/MappaLoginModule';
+import { Logger } from 'src/services/logger';
+import { mappaStore } from 'src/store';
 import { Vue, Component } from 'vue-property-decorator';
 
 @Component
 export default class UserDataMenu extends Vue {
+    log = new Logger(this)
+    async mount(){
+        this.log.logInfo('MOUNTED')
+        await mappaStore.getAuthFromLocalStorage();          
+    }
 
     logout(): void {
-        MappaLogin.clearAuth()
+        mappaStore.logout()        
     }
 
     clickMenu():void{
-        if (MappaLogin.isLogged)
+        if (mappaStore.isAuthorized)
             return;
         void this.$router.push('login')
     }
     get title() {
-        if (MappaLogin.isLogged){
-            return MappaLogin.userName
+        if (mappaStore.isAuthorized){
+            return mappaStore.userName
         } else {
             return 'LOGIN'
         }
     }
 
     get fullName() {
-        return MappaLogin.userName
+        return mappaStore.userName
     }
     get grupoNome(){
-        return MappaLogin.grupoNome
+        return mappaStore.grupoNome
     }
     get secaoNome(){
-        return MappaLogin.secaoNome
+        return mappaStore.secaoNome
     }
 
 }
