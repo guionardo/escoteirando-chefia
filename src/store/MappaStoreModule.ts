@@ -8,10 +8,11 @@ import { Logger } from 'src/services/logger';
 import {
   mappaGetEscotista,
   mappaGetGrupo,
+  mappaGetSecoes,
   mappaLogin,
   setApiAuth
 } from 'src/services/mappa_api';
-import { getAuth } from 'src/services/storage_service';
+import { clearAllStorage, getAuth } from 'src/services/storage_service';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
 const NAO_LOGADO = 'Usuário não logado';
@@ -54,6 +55,7 @@ export default class MappaStoreModule extends VuexModule {
   escotista: IEscotista = emptyEscotista;
   grupo: IGrupo = emptyGrupo;
   secao: ISecao = emptySecao;
+  secoes: Array<ISecao> = []
 
   @Action
   async getAuthFromLocalStorage() {
@@ -92,6 +94,7 @@ export default class MappaStoreModule extends VuexModule {
   @Action
   logout() {
     this.CLEAR_ALL();
+    clearAllStorage()
   }
 
   @Action
@@ -102,8 +105,10 @@ export default class MappaStoreModule extends VuexModule {
         escotista.codigoGrupo,
         escotista.codigoRegiao
       );
+      const secoes = await mappaGetSecoes(userId)
       this.SET_ESCOTISTA(escotista);
       this.SET_GRUPO(grupo);
+      this.SET_SECOES(secoes)
     } catch (error) {
       this.CLEAR_ALL();
       logger.logError(`ReloadUser userId:${userId}`, error);
@@ -136,6 +141,11 @@ export default class MappaStoreModule extends VuexModule {
   @Mutation
   SET_SECAO(secao: ISecao) {
     this.secao = secao;
+  }
+
+  @Mutation
+  SET_SECOES(secoes: Array<ISecao>){
+    this.secoes = secoes
   }
 
   get isAuthorized(): boolean {

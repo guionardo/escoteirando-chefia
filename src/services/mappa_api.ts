@@ -3,12 +3,13 @@ import Authorization from 'src/domain/models/authorization';
 import {
   IAuthorization,
   IEscotista,
-  IGrupo
+  IGrupo,
+  ISecao
 } from 'src/domain/models/interfaces';
 import { LoginRequest } from 'src/domain/requests/login_request';
 import { ILoginResponse } from 'src/domain/responses';
 import { Logger } from './logger';
-import { getEscotista, getGrupo } from './storage_service';
+import { getEscotista, getGrupo, getSecoes } from './storage_service';
 
 const logger = new Logger('MAPPA_API');
 const USER_AGENT = 'okhttp/3.4.1';
@@ -111,3 +112,44 @@ export function mappaGetGrupo(
     }
   });
 }
+
+export function mappaGetSecoes(userId: number): Promise<Array<ISecao>> {
+  return new Promise((resolve, reject) => {
+    ValidateAuth();
+    let secoes = getSecoes(userId);
+    if (secoes.length > 0) {
+      resolve(secoes);
+      return;
+    }
+    const url = `/api/escotistas/${userId}/secoes`;
+    axios
+      .get(url)
+      .then(response => {
+        secoes = response.data as Array<ISecao>;
+        if (secoes.length == 0) {
+          throw new Error(`No sections received from userId=${userId}`);
+        }
+        resolve(secoes);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+}
+/*
+  def get_secoes(self, login: Login) -> List[Secao]:
+        if not self._mappa._set_auth(login):
+            return
+        response = self._http.get(f'/api/escotistas/{login.userId}/secoes')
+
+        secoes = []
+        if response.is_ok:
+            try:
+                for secao in response.content:
+                    secoes.append(Secao(**secao))
+            except Exception as exc:
+                self.LOG.error('ERROR PARSING SECOES %s - %s',
+                               response.content, str(exc))
+
+        return secoes
+        */
