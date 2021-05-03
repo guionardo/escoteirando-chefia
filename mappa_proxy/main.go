@@ -43,15 +43,16 @@ func MappaGetRequest(c *gin.Context) {
   }
   body, err := ioutil.ReadAll(resp.Body)
   if err == nil {
-    c.Header("Content-Type", resp.Header.Get("Content-Type"))
+    c.Header("Content-Type", "application/json")
     c.Status(resp.StatusCode)
     c.Writer.Write(body)
+  } else {
+    c.JSON(resp.StatusCode, gin.H{"message": "mAPPa Backend error", "status": resp.Status, "error": err})
   }
-
 }
 
 func cloneHeaders(c *gin.Context, req *http.Request) {
-  allowedHeaders := []string{"Authorization", "User-Agent", "Accept", "Accept-Encoding", "Accept-Language", "Host"}
+  allowedHeaders := []string{"Authorization", "User-Agent","Host"}
   for _, s := range allowedHeaders {
     headerValue := c.GetHeader(s)
     if len(headerValue) > 0 {
@@ -79,10 +80,7 @@ func healthCheck(context *gin.Context) {
 func main() {
   r := gin.Default()
   r.GET("/hc", healthCheck)
-  r.GET("/ping", func(c *gin.Context) {
-    c.JSON(200, gin.H{"message": "pong"})
-  })
   r.GET("/mappa/*request", MappaGetRequest)
   r.POST("/mappa/*request", MappaPostRequest)
-  r.Run("localhost:8081")
+  r.Run(":8081")
 }
