@@ -12,10 +12,15 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      - name: Push to GitHub Packages
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: ./mappa_proxy
           push: true
-          tags: guionardo/escoteirando-chefia_mappa-proxy:latest                    
-          
+          tags: guionardo/escoteirando-chefia_mappa-proxy:latest
