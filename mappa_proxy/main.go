@@ -2,73 +2,13 @@ package main
 
 import (
   "github.com/gin-gonic/gin"
-  "io/ioutil"
-  "log"
-  "net/http"
-  "strings"
+  "github.com/guionardo/mappa_proxy/mappa"
+  "os"
 )
 
-const MAPPA_URL = "http://mappa.escoteiros.org.br"
-
-var HTTP_CLIENT = &http.Client{}
-
-func Ping() (int, string, error) {
-  res, err := http.Head(MAPPA_URL)
-
-  if err != nil {
-    return res.StatusCode, res.Status, err
-  }
-  return res.StatusCode, res.Status, nil
-}
-
-func MappaGetRequest(c *gin.Context) {
-  tudo := c.Param("request")
-  url := MAPPA_URL + tudo
-
-  if strings.Contains(c.Request.RequestURI, "?") {
-    queryArgs := strings.SplitAfterN(c.Request.RequestURI, "?", 2)[1]
-    url += "?" + queryArgs
-  }
-  req, err := http.NewRequest("GET", url, nil)
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  cloneHeaders(c, req)
-
-  resp, err := HTTP_CLIENT.Do(req)
-  defer resp.Body.Close()
-  if err != nil {
-    log.Fatal(err)
-  }
-  body, err := ioutil.ReadAll(resp.Body)
-  if err == nil {
-    c.Header("Content-Type", "application/json")
-    c.Status(resp.StatusCode)
-    c.Writer.Write(body)
-  } else {
-    c.JSON(resp.StatusCode, gin.H{"message": "mAPPa Backend error", "status": resp.Status, "error": err})
-  }
-}
-
-func cloneHeaders(c *gin.Context, req *http.Request) {
-  allowedHeaders := []string{"Authorization", "User-Agent","Host"}
-  for _, s := range allowedHeaders {
-    headerValue := c.GetHeader(s)
-    if len(headerValue) > 0 {
-      req.Header.Set(s, headerValue)
-    }
-  }
-}
-
-func MappaPostRequest(c *gin.Context) {
-  tudo := c.Param("request")
-  url := MAPPA_URL + tudo
-  c.JSON(200, gin.H{"OK": true, "WHAT": tudo, "URL": url})
-}
 func healthCheck(context *gin.Context) {
   // Test mappa api
-  statusCode, status, err := Ping()
+  statusCode, status, err := mappa.Ping()
   statusHealthy := "HEALTHY"
   if err != nil || statusCode < 1 || statusCode >= 400 {
     statusHealthy = "UNHEALTHY"
@@ -77,10 +17,18 @@ func healthCheck(context *gin.Context) {
 
 }
 
-func main() {
+func setupServer() *gin.Engine{
   r := gin.Default()
   r.GET("/hc", healthCheck)
-  r.GET("/mappa/*request", MappaGetRequest)
-  r.POST("/mappa/*request", MappaPostRequest)
-  r.Run(":8081")
+  r.GET("/mappa/*request", mappa.MappaGetRequest)
+  r.POST("/mappa/*request", mappa.MappaPostRequest)
+  return r
+}
+
+func main() {
+  port := os.Getenv("PORT")
+  if len(port) == 0 {
+    port = "8081"
+  }
+  setupServer().Run(":"+port)
 }

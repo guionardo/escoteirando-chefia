@@ -1,6 +1,6 @@
 FROM golang:1.16
 WORKDIR /go/src/github.com/guionardo/mappa_proxy/
-RUN go get -d -v github.com/gin-gonic/gin
+RUN go get -u github.com/gin-gonic/gin
 ARG GIN_MODE
 COPY main.go .
 COPY go.* ./
