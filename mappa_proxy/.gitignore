@@ -1,1 +1,5 @@
 mappa_proxy
+__debug_bin
+main
+.vscode
+.idea
