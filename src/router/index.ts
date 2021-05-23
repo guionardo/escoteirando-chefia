@@ -25,20 +25,20 @@ export default route<Store<unknown>>(function({ Vue }) {
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
   });
-  Router.beforeEach(async (to, from, next) => {
-    await mappaStore.getAuthFromLocalStorage();
+  // Router.beforeEach(async (to, from, next) => {
+  //   await mappaStore.getAuthFromLocalStorage();
 
-    if (mappaStore.isAuthorized) {
-      if (to.name == 'login') {
-        logger.logDebug('User is logged. Login denied');
-        next({ path: '/' }); // false
-        return;
-      }
-      next();
-    } else {
-      logger.logDebug('User is not logged. Redirect to login');
-      next('login');
-    }
-  });
+  //   if (mappaStore.isAuthorized) {
+  //     if (to.name == 'login') {
+  //       logger.logDebug('User is logged. Login denied');
+  //       next({ path: '/' }); // false
+  //       return;
+  //     }
+  //     next();
+  //   } else {
+  //     logger.logDebug('User is not logged. Redirect to login');
+  //     next('login');
+  //   }
+  // });
   return Router;
 });

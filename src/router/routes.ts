@@ -15,6 +15,11 @@ const routes: RouteConfig[] = [
         path: 'usage_terms',
         name: 'usage_terms',
         component: () => import('pages/UsageTerms.vue')
+      },
+      {
+        path: 'secoes',
+        name: 'secoes',
+        component: () => import('pages/Secoes.vue')
       }
     ]
   },
