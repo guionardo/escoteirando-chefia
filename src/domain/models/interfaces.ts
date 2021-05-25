@@ -5,6 +5,11 @@ export interface IAuthorization extends ILoginResponse{
   validUntil: Date;
 }
 
+export interface ILoginRequest {
+  username:string;
+  password:string;
+}
+
 export interface IEscotista {
   codigo: number;
   codigoAssociado: number;
