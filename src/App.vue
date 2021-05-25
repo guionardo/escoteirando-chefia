@@ -9,6 +9,7 @@ import { mappaStore } from './store';
 @Component
 export default class App extends Vue {
  async mounted(){
+   await mappaStore.getAuthFromLocalStorage()
    if (mappaStore.isAuthorized){
      if (this.$router.currentRoute.name=='login'){
        await this.$router.push({name:'home'})

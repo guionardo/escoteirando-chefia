@@ -2,37 +2,11 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="isLeftDrawerOpen = !isLeftDrawerOpen"
-        />
-
+        <user-nav-menu/>
         <q-toolbar-title> Escoteirando Chefia </q-toolbar-title>
         <user-data-menu />
       </q-toolbar>
     </q-header>
-
-    <q-drawer
-      v-model="isLeftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-    >
-      <q-list>
-        <q-item-label header class="text-grey-8">
-          Essential Links
-        </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -43,60 +17,14 @@
 <script lang="ts">
 import EssentialLink from 'components/EssentialLink.vue';
 import UserDataMenu from 'components/UserDataMenu.vue';
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
+import UserNavMenu from 'components/UserNavMenu.vue'
 
 import { Vue, Component } from 'vue-property-decorator';
 
 @Component({
-  components: { EssentialLink, UserDataMenu },
+  components: { EssentialLink, UserDataMenu, UserNavMenu },
 })
-export default class MainLayout extends Vue {
-  essentialLinks = linksData;
-  login = {};
-  isLeftDrawerOpen=false
+export default class MainLayout extends Vue {  
+
 }
 </script>

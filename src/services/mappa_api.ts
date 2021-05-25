@@ -41,9 +41,15 @@ export function mappaLogin(
   password: string
 ): Promise<IAuthorization> {
   const request = new LoginRequest(username, password).toJson();
+  logger.logDebug('Login request',request)
   return new Promise((resolve, reject) => {
+    if (!(!!username && !!password)){
+      reject(new Error(`Credenciais inválidas ${JSON.stringify({username,password})}`))
+      return
+    }
+    
     axios
-      .post('/api/escotistas/login', request)
+      .post('login', request)      
       .then(response => {
         const loginResponse = response?.data as ILoginResponse;
         logger.logInfo('LOGIN OK', loginResponse);

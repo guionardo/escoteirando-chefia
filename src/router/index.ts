@@ -1,16 +1,13 @@
 import { route } from 'quasar/wrappers';
-import { Logger } from 'src/services/logger';
 import VueRouter from 'vue-router';
 import { Store } from 'vuex';
 import routes from './routes';
-import { mappaStore } from 'src/store';
 
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation
  */
 
-const logger = new Logger('Router');
 
 export default route<Store<unknown>>(function({ Vue }) {
   Vue.use(VueRouter);

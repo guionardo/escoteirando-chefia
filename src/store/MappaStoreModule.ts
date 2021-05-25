@@ -2,7 +2,8 @@ import {
   IAuthorization,
   IEscotista,
   IGrupo,
-  ISecao
+  ISecao,
+  ILoginRequest
 } from 'src/domain/models/interfaces';
 import { Logger } from 'src/services/logger';
 import {
@@ -12,7 +13,7 @@ import {
   mappaLogin,
   setApiAuth
 } from 'src/services/mappa_api';
-import { clearAllStorage, getAuth } from 'src/services/storage_service';
+import { clearAllStorage, getAuth, setAuth } from 'src/services/storage_service';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
 const NAO_LOGADO = 'Usuário não logado';
@@ -70,16 +71,21 @@ export default class MappaStoreModule extends VuexModule {
     }
     this.SET_AUTH(auth);
     setApiAuth(auth.id);
+    setAuth(auth)
     await this.reloadUser(auth.userId);
 
     logger.logInfo('User loaded from localStorage');
   }
 
   @Action
-  login(username: string, password: string): boolean {
+  login(loginRequest:ILoginRequest): boolean {
+    const username=loginRequest.username
+    const password=loginRequest.password
+    logger.logDebug('Called mappaStore.login',{username,password})
     mappaLogin(username, password)
       .then(async response => {
         setApiAuth(response.auth);
+        setAuth(response)
         this.SET_AUTH(response);
         await this.reloadUser(response.userId);
         return true;

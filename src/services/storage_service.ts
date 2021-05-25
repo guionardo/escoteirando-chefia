@@ -33,6 +33,7 @@ export function getAuth(): IAuthorization | null {
 }
 
 export function setAuth(auth: IAuthorization): void {
+  logger.logDebug('setAuth', auth)
   LocalStorage.set(LOGIN, auth);
 }
 export function getEscotista(userId: number): IEscotista | null {
@@ -79,7 +80,7 @@ export function setSecoes(userId: number, secoes: Array<ISecao>) {
 }
 
 export function clearAllStorage() {
-  const cleared = [];
+  const cleared:string[] = [];
   LocalStorage.getAllKeys().map(key => {
     if (key.startsWith('MAPPA_')) {
       LocalStorage.remove(key);
