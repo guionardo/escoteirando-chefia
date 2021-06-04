@@ -58,6 +58,7 @@ interface ISecaoNode {
   enabled?: boolean;
   children?: ISecaoNode[];
   associado?: IAssociado;
+  secao?: ISecao;
 }
 const secoes: ISecaoNode[] = [
   {
@@ -116,7 +117,7 @@ import PageTemplate from 'components/PageTemplate.vue';
   components: { SelectSecao, SubSecaoList, PageTemplate }
 })
 export default class Secoes extends Vue {
-  secoes = secoes;
+  secoes: ISecaoNode[] = secoes;
 
   idadeAssociado(dataNascimento: Date): string {
     const dn = new Date(dataNascimento);
@@ -184,25 +185,28 @@ export default class Secoes extends Vue {
   }
   created() {
     this.secoes = mappaStore.getSecoes.map(s => {
-      const secao = {
+      const secao: ISecaoNode = {
         label: s.nome,
         header: 'generic',
         body: 'toogle',
         secao: s
       };
-      secao.children = s.SubSecoes.map(ss => {
-        const subsecao: ISecaoNode = {
-          label: ss.nome,
-          header: 'generic',
-          body: 'toogle'
-        };
-        subsecao.children = this.associadosOrdenados(
-          ss.associados,
-          ss.codigoLider,
-          ss.codigoViceLider
-        );
-        return subsecao;
-      });
+      if (s.SubSecoes) {
+        secao.children = s.SubSecoes.map(ss => {
+          const subsecao: ISecaoNode = {
+            label: ss.nome,
+            header: 'generic',
+            body: 'toogle',
+            children: []
+          };
+          subsecao.children = this.associadosOrdenados(
+            ss.associados,
+            ss.codigoLider,
+            ss.codigoViceLider
+          );
+          return subsecao;
+        });
+      }
       return secao;
     });
   }

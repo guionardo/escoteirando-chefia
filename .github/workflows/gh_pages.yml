@@ -31,8 +31,6 @@ jobs:
       #   run: yarn run lint
       - name: Build
         run: yarn quasar build
-      - name: ENV
-        run: echo ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
