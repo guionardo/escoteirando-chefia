@@ -32,7 +32,7 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type MappaStats struct {
+type Stats struct {
 	RunningSince  time.Time `json:"running_since"`
 	Users         int       `json:"users"`
 	LastLogin     time.Time `json:"last_login"`
@@ -185,13 +185,13 @@ func StartMappa() {
 	loadData()
 }
 
-func GetStats() MappaStats {
+func GetStats() Stats {
 	logins.RLock()
 	usersCount := len(logins.logins)
 	lastLogin := logins.lastLogin
 	lastUserLogin := logins.lastUserLogin
 	logins.RUnlock()
-	return MappaStats{
+	return Stats{
 		RunningSince:  startedTime,
 		Users:         usersCount,
 		LastLogin:     lastLogin,
