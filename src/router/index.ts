@@ -22,6 +22,7 @@ export default route<Store<unknown>>(function({ Vue }) {
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
   });
+  
   // Router.beforeEach(async (to, from, next) => {
   //   await mappaStore.getAuthFromLocalStorage();
 

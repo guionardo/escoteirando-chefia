@@ -7,7 +7,10 @@ declare module 'vue/types/vue' {
   }
 }
 
-axios.defaults.baseURL = 'http://localhost:8081/mappa/' //'http://mappa.escoteiros.org.br';
+export const proxyURL:string = (process.env.PROXY_URL || 'http://guiosoft.info:8001')
+
+
+axios.defaults.baseURL = `${proxyURL}/mappa/` //'http://mappa.escoteiros.org.br';
 axios.defaults.headers = {
   'User-Agent': 'okhttp/3.4.1'
 };

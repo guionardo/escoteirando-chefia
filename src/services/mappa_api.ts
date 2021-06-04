@@ -1,20 +1,38 @@
 import axios from 'axios';
+import { proxyURL } from 'src/boot/axios';
 import Authorization from 'src/domain/models/authorization';
 import {
   IAuthorization,
   IEscotista,
   IGrupo,
-  ISecao
+  IMarcacoes,
+  IProgressao,
+  ISecao,
+  ISubSecao
 } from 'src/domain/models/interfaces';
+import { Progressao } from 'src/domain/models/progressao';
 import { LoginRequest } from 'src/domain/requests/login_request';
 import { ILoginResponse } from 'src/domain/responses';
 import { Logger } from './logger';
-import { getEscotista, getGrupo, getSecoes } from './storage_service';
+import { getEscotista, getGrupo, getSecoes, setSecoes, getSubSecoes, setSubSecoes, getImagem, setImagem, getMarcacoes, setMarcacoes, getProgressoes, setProgressoes } from './storage_service';
 
 const logger = new Logger('MAPPA_API');
 const USER_AGENT = 'okhttp/3.4.1';
 let currentAuth = '';
-export function setApiAuth(auth: string) {
+
+export function isProxyHealthy (): Promise<boolean> {
+  logger.logDebug('Checking proxy health');
+  return new Promise((resolve, reject) => {
+    axios.get('hc', { baseURL: proxyURL })
+      .then(() => {
+        resolve(true)
+      }).catch(error => {
+        logger.logError('Proxy não está disponível', error)
+        reject(false)
+      })
+  })
+}
+export function setApiAuth (auth: string) {
   currentAuth = auth;
   axios.defaults.headers = {
     'User-Agent': USER_AGENT,
@@ -22,34 +40,34 @@ export function setApiAuth(auth: string) {
   };
 }
 
-export function clearApiAuth() {
+export function clearApiAuth () {
   currentAuth = '';
   axios.defaults.headers = {
     'User-Agent': USER_AGENT
   };
 }
 
-function ValidateAuth() {
+function ValidateAuth () {
   if (!currentAuth) {
     logger.logWarn('MISSING AUTHORIZATION');
     throw new Error('MISSING AUTHORIZATION');
   }
 }
 
-export function mappaLogin(
+export function mappaLogin (
   username: string,
   password: string
 ): Promise<IAuthorization> {
   const request = new LoginRequest(username, password).toJson();
-  logger.logDebug('Login request',request)
+  logger.logDebug('Login request', request)
   return new Promise((resolve, reject) => {
-    if (!(!!username && !!password)){
-      reject(new Error(`Credenciais inválidas ${JSON.stringify({username,password})}`))
+    if (!(!!username && !!password)) {
+      reject(new Error(`Credenciais inválidas ${JSON.stringify({ username, password })}`))
       return
     }
-    
+
     axios
-      .post('login', request)      
+      .post('login', request)
       .then(response => {
         const loginResponse = response?.data as ILoginResponse;
         logger.logInfo('LOGIN OK', loginResponse);
@@ -62,7 +80,7 @@ export function mappaLogin(
   });
 }
 
-export function mappaGetEscotista(userId: number): Promise<IEscotista> {
+export function mappaGetEscotista (userId: number): Promise<IEscotista> {
   return new Promise((resolve, reject) => {
     ValidateAuth();
     const escotista = getEscotista(userId);
@@ -82,7 +100,7 @@ export function mappaGetEscotista(userId: number): Promise<IEscotista> {
   });
 }
 
-export function mappaGetGrupo(
+export function mappaGetGrupo (
   codigoGrupo: number,
   codigoRegiao: string
 ): Promise<IGrupo> {
@@ -119,7 +137,7 @@ export function mappaGetGrupo(
   });
 }
 
-export function mappaGetSecoes(userId: number): Promise<Array<ISecao>> {
+export function mappaGetSecoes (userId: number): Promise<Array<ISecao>> {
   return new Promise((resolve, reject) => {
     ValidateAuth();
     let secoes = getSecoes(userId);
@@ -135,6 +153,7 @@ export function mappaGetSecoes(userId: number): Promise<Array<ISecao>> {
         if (secoes.length == 0) {
           throw new Error(`No sections received from userId=${userId}`);
         }
+        setSecoes(userId, secoes)
         resolve(secoes);
       })
       .catch(error => {
@@ -142,20 +161,101 @@ export function mappaGetSecoes(userId: number): Promise<Array<ISecao>> {
       });
   });
 }
-/*
-  def get_secoes(self, login: Login) -> List[Secao]:
-        if not self._mappa._set_auth(login):
-            return
-        response = self._http.get(f'/api/escotistas/{login.userId}/secoes')
 
-        secoes = []
-        if response.is_ok:
-            try:
-                for secao in response.content:
-                    secoes.append(Secao(**secao))
-            except Exception as exc:
-                self.LOG.error('ERROR PARSING SECOES %s - %s',
-                               response.content, str(exc))
+export function mappaGetEquipe (userId: number, codSecao: number): Promise<Array<ISubSecao>> {
+  return new Promise((resolve, reject) => {
+    ValidateAuth();
+    let subsecoes = getSubSecoes(userId, codSecao);
+    if (subsecoes.length > 0) {
+      resolve(subsecoes)
+      return
+    }
+    const filter = { include: 'associados' }
+    const url = `/api/escotistas/${userId}/secoes/${codSecao}/equipes?filter=${JSON.stringify(filter)}`
+    console.log('getSubSecoes URL', url);
+    axios
+      .get(url)
+      .then(response => {
+        subsecoes = response.data as Array<ISubSecao>
+        if (subsecoes.length == 0) {
+          throw new Error(`No subsections received from userId=${userId}, codSecao=${codSecao}`)
+        }
+        setSubSecoes(userId, codSecao, subsecoes)
+        resolve(subsecoes)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
 
-        return secoes
-        */
+export function mappaGetImagem (codImagem: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    ValidateAuth()
+    let imagem = getImagem(codImagem)
+    if (imagem) {
+      resolve(imagem)
+      return
+    }
+    const url = `/api/imagens/${codImagem}`
+    console.log('getImagem', url)
+    axios
+      .get(url)
+      .then(response => {
+        imagem = response.data as string
+        console.log(`getImagem ${url}`, imagem)
+        setImagem(codImagem, imagem)
+        resolve(response.data)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
+
+export function mappaGetMarcacoes (codSecao: number): Promise<IMarcacoes> {
+  return new Promise((resolve, reject) => {
+    ValidateAuth()
+    let marcacoes = getMarcacoes(codSecao)
+    if (marcacoes) {
+      resolve(marcacoes)
+      return
+    }
+    const ultimaAtualizacao = '1970-01-01T00:00:00.000.Z' //TODO: Implementar lógica para obter as marcações de forma atualizada
+    const url = `/api/marcacoes/v2/updats?dataHoraUltimaAtualizacao=${ultimaAtualizacao}&codigoSecao=${codSecao}`
+    axios
+      .get(url)
+      .then(response => {
+        marcacoes = response.data as IMarcacoes
+        logger.logInfo('mappaGetMarcacoes', marcacoes)
+        setMarcacoes(codSecao, marcacoes)
+        resolve(marcacoes)
+      }).catch(error => {
+        reject(error)
+      })
+  })
+}
+
+export function mappaGetProgressoes (codRamo: string): Promise<IProgressao[]> {
+  return new Promise((resolve, reject) => {
+    ValidateAuth()
+    let progressoes = getProgressoes(codRamo)
+    if (progressoes) {
+      resolve(progressoes)
+      return
+    }
+    const caminhos = codRamo == 'A' ? [1, 2, 3] : codRamo == 'E' ? [4, 5, 6] : codRamo == 'S' ? [11, 12] : codRamo == 'P' ? [15, 16] : [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 17, 18, 19, 20]
+    const filter = { where: { numeroGrupo: null, codigoRegiao: null, codigoCaminho: { inq: caminhos } } }
+
+    axios
+      .get('/api/progressao-atividades?filter=' + JSON.stringify(filter))
+      .then(response => {
+        progressoes = (response.data as IProgressao[]).map(p => new Progressao(p))
+        logger.logInfo('mappaGetProgressoes', progressoes)
+        setProgressoes(codRamo, progressoes)
+        resolve(progressoes)
+      }).catch(error => {
+        reject(error)
+      })
+  })
+}

@@ -2,14 +2,16 @@ import {
   IAuthorization,
   IEscotista,
   IGrupo,
-  ISecao,
-  ILoginRequest
+  ISecao,  
+  ILoginRequest,
+  ISubSecao
 } from 'src/domain/models/interfaces';
 import { Logger } from 'src/services/logger';
 import {
   mappaGetEscotista,
   mappaGetGrupo,
   mappaGetSecoes,
+  mappaGetEquipe,
   mappaLogin,
   setApiAuth
 } from 'src/services/mappa_api';
@@ -37,17 +39,17 @@ const emptyEscotista: IEscotista = {
   username: 'guionardo'
 };
 const emptyGrupo: IGrupo = {
-  codigo: 32,
-  codigoRegiao: 'SC',
-  nome: 'TESTE Leões de Blumenau',
+  codigo: 0,
+  codigoRegiao: 'ZZ',
+  nome: '',
   codigoModalidade: 0
 };
 const emptySecao: ISecao = {
   codigo: 1,
-  codigoRegiao: 'SC',
-  codigoGrupo: 32,
+  codigoRegiao: 'ZZ',
+  codigoGrupo: 0,
   codigoTipoSecao: 1,
-  nome: 'Alcatéia 1'
+  nome: ''
 };
 
 @Module({ name: 'MappaStoreModule' })
@@ -57,6 +59,7 @@ export default class MappaStoreModule extends VuexModule {
   grupo: IGrupo = emptyGrupo;
   secao: ISecao = emptySecao;
   secoes: Array<ISecao> = []
+  equipes:Array<ISubSecao>=[]
 
   @Action
   async getAuthFromLocalStorage() {
@@ -80,8 +83,7 @@ export default class MappaStoreModule extends VuexModule {
   @Action
   login(loginRequest:ILoginRequest): boolean {
     const username=loginRequest.username
-    const password=loginRequest.password
-    logger.logDebug('Called mappaStore.login',{username,password})
+    const password=loginRequest.password    
     mappaLogin(username, password)
       .then(async response => {
         setApiAuth(response.auth);
@@ -111,14 +113,24 @@ export default class MappaStoreModule extends VuexModule {
         escotista.codigoGrupo,
         escotista.codigoRegiao
       );
-      const secoes = await mappaGetSecoes(userId)
+      const secoes = await mappaGetSecoes(userId)      
+      for(let i=0;i<secoes.length;i++)      {
+        const equipe = await mappaGetEquipe(userId,secoes[i].codigo)
+        secoes[i].SubSecoes = equipe        
+      }
+      
       this.SET_ESCOTISTA(escotista);
       this.SET_GRUPO(grupo);
-      this.SET_SECOES(secoes)
+      this.SET_SECOES(secoes)      
     } catch (error) {
       this.CLEAR_ALL();
       logger.logError(`ReloadUser userId:${userId}`, error);
     }
+  }
+
+  @Action
+  setSecaoAtiva(secao:ISecao){
+    this.SET_SECAO(secao)
   }
 
   @Mutation
@@ -154,6 +166,11 @@ export default class MappaStoreModule extends VuexModule {
     this.secoes = secoes
   }
 
+  @Mutation
+  SET_EQUIPES(equipes:Array<ISubSecao>){
+    this.equipes=equipes
+  }
+
   get isAuthorized(): boolean {
     return !!this.auth?.auth && this.auth?.validUntil > new Date();
   }
@@ -171,5 +188,13 @@ export default class MappaStoreModule extends VuexModule {
   }
   get secaoNome(): string {
     return this.isAuthorized ? `${this.secao.nome}` : NAO_LOGADO;
+  }
+
+  get getSecoes():ISecao[]{
+    return this.secoes
+  }
+
+  get getSecaoAtiva():ISecao{
+    return this.secao
   }
 }
