@@ -7,7 +7,7 @@ declare module 'vue/types/vue' {
   }
 }
 
-export const proxyURL:string = (process.env.PROXY_URL || 'http://guiosoft.info:8001')
+export const proxyURL:string = (process.env.PROXY_URL || 'https://mappa-proxy.herokuapp.com')
 
 
 axios.defaults.baseURL = `${proxyURL}/mappa/` //'http://mappa.escoteiros.org.br';
