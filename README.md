@@ -4,6 +4,8 @@
 
 [![Publish Docker image](https://github.com/guionardo/escoteirando-chefia/actions/workflows/mappa-proxy-docker.yml/badge.svg)](https://github.com/guionardo/escoteirando-chefia/actions/workflows/mappa-proxy-docker.yml)
 
+[![wakatime](https://wakatime.com/badge/github/guionardo/escoteirando-chefia.svg)](https://wakatime.com/badge/github/guionardo/escoteirando-chefia)
+
 Projeto para dar uma interface WEB às informações do aplicativo mAPPa da UEB
 
 ## Install the dependencies
